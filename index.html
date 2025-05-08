@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Soroban</title>
+  <style>  
+    /* General body styling */
+    body {
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      padding: 30px; /* Increased padding around the content */
+    }
+
+    /* Styling for the soroban (abacus) container */
+    .soroban {
+      display: flex;
+      gap: 10px; /* Increased gap between rods */
+      background: #8B4513;
+      padding: 20px 30px; /* Increased padding around the soroban */
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3); /* Larger shadow */
+    }
+
+    /* Styling for each rod in the soroban */
+    .rod {
+      position: relative;
+      width: 80px; /* Increased rod width */
+      height: 300px; /* Increased rod height */
+      background: #D2B48C;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0px 0; /* Increased padding inside each rod */
+    }
+
+    /* Styling for the black line in the center of each rod */
+    .rod-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 4px; /* Slightly wider black line */
+      background: black;
+      z-index: 0;
+    }
+
+    /* Styling for heaven (upper part) of the rod */
+    .heaven {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      height: 15%; /* Increased heaven height */
+      gap: 5px; /* Increased space between heaven beads */
+      z-index: 1;
+    }
+
+    /* Space between heaven and earth on the rod */
+    .gap-space {
+      height: 8%; /* Increased gap space */
+      z-index: 1;
+    }
+
+    /* Styling for earth (lower part) of the rod */
+    .earth {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 55%; /* Increased earth height */
+      gap: 0px; /* Increased space between earth beads */
+      margin-top: 5px; 
+      z-index: 1;
+    }
+
+    /* Styling for the black bar dividing the heaven and earth */
+    .bar {
+      position: absolute;
+      top: 30%; /* Adjusted position of the bar */
+      width: 100%;
+      height: 8px; /* Larger bar height */
+      background: black;
+      z-index: 2;
+    }
+
+    /* Styling for each bead */
+    .bead {
+      width: 50px;
+      height: 30px;
+      background: radial-gradient(circle at 30% 30%, #444, #111);
+      border-radius: 50% / 40%;
+      box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.2),
+              inset 2px 2px 5px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s, background-color 0.2s;
+  z-index: 3;
+}
+
+/* Highlighted (active) bead */
+.bead.active {
+  background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500);
+  box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.4),
+              inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+    /* Heaven bead active (moves down when clicked) */
+    .bead.heaven.active {
+      transform: translateY(150%); /* Increased movement of the heaven bead */
+    }
+
+    /* Earth bead active (moves up when clicked) */
+    .bead.earth.active {
+      transform: translateY(-150%); /* Increased movement of the earth bead */
+    }
+  </style>
+</head>
+<body>
+ <div style="transform: scale(1.5); transform-origin: top center;">
+  <div class="soroban">
+    <!-- Rod 1 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Rod 2 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Rod 3 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Rod 4 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Rod 5 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Rod 6 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+
+    <!-- Rod 7 -->
+    <div class="rod">
+      <div class="rod-line"></div>
+      <div class="heaven"><div class="bead heaven"></div></div>
+      <div class="gap-space"></div>
+      <div class="earth">
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+        <div class="bead earth"></div>
+      </div>
+      <div class="bar"></div>
+    </div>
+  </div>
+</div>
+
+  <!-- JavaScript to toggle bead activation on click -->
+  <script>
+    // Event listeners for all beads
+    document.querySelectorAll('.bead').forEach(bead => {
+      bead.addEventListener('click', toggleBead);
+      bead.addEventListener('touchstart', toggleBead, { passive: true });
+    });
+
+    function toggleBead(event) {
+      event.preventDefault();
+
+      const bead = event.currentTarget;
+
+      if (!bead.classList.contains('earth')) {
+        // Heaven beads: toggle freely
+        bead.classList.toggle('active');
+        return;
+      }
+
+      const allEarth = Array.from(bead.parentElement.children);
+      const index = allEarth.indexOf(bead);
+
+      const isActive = bead.classList.contains('active');
+
+      if (!isActive) {
+        // Trying to activate: check if all previous beads are active
+        const allBeforeActive = allEarth.slice(0, index).every(b => b.classList.contains('active'));
+        if (allBeforeActive) {
+          bead.classList.add('active');
+        }
+      } else {
+        // Trying to deactivate: check if all after beads are inactive
+        const allAfterInactive = allEarth.slice(index + 1).every(b => !b.classList.contains('active'));
+        if (allAfterInactive) {
+          bead.classList.remove('active');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
