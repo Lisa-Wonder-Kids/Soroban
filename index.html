@@ -4,36 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soroban</title>
-  <style> 
-    
+  <style>
     html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  width: 100vw;
-  height: 100dvh;
-  background: gray;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  touch-action: manipulation;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      background: gray;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      user-select: none;
+      position: fixed;
+      overscroll-behavior: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-overflow-scrolling: none;
+    }
+
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
     .soroban {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  background: #8B4513;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  max-width: 100vw;
-  max-height: 100vh;
-  overflow: hidden;
-}
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      background: #8B4513;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      max-width: 100vw;
+      max-height: 100vh;
+      overflow: hidden;
+    }
 
     .rod {
       position: relative;
@@ -45,7 +56,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 0px 0;
     }
 
     .rod-line {
@@ -78,8 +88,7 @@
       justify-content: flex-start;
       align-items: center;
       height: 52%;
-      gap: 0px;
-      margin-top: 5px; 
+      margin-top: 5px;
       z-index: 1;
     }
 
@@ -117,7 +126,7 @@
       transform: translateY(-150%);
     }
 
-    /* Responsive tweaks: maintain horizontal layout, allow wrap */
+    /* Responsive tweaks */
     @media (max-width: 768px) {
       .soroban {
         flex-direction: row;
@@ -151,33 +160,42 @@
         height: 22px;
       }
     }
+
+    /* Portrait warning overlay */
+    @media screen and (orientation: portrait) {
+      body::before {
+        content: "Please rotate your device";
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: black;
+        color: white;
+        font-size: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        text-align: center;
+        padding: 1em;
+      }
+
+      #container {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
-      <div class="soroban">
-      <!-- 7 Rods -->
-      <!-- Repeat this block for each rod -->
-      <!-- Rod Template -->
-      <!-- You can copy-paste or generate more rods dynamically later -->
-      <div class="rod">
-        <div class="rod-line"></div>
-        <div class="heaven"><div class="bead heaven"></div></div>
-        <div class="gap-space"></div>
-        <div class="earth">
-          <div class="bead earth"></div>
-          <div class="bead earth"></div>
-          <div class="bead earth"></div>
-          <div class="bead earth"></div>
-        </div>
-        <div class="bar"></div>
-      </div>
-      <!-- Repeat Rod -->
+  <div id="container">
+    <div class="soroban">
+      <!-- 7 rods -->
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+    </div>
   </div>
 
   <script>
