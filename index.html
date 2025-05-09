@@ -8,20 +8,16 @@
     html, body {
       margin: 0;
       padding: 0;
-      width: 100vw;
-      height: 100dvh;
       overflow: hidden;
+      width: 100vw;
+      height: 100vh;
       background: gray;
       display: flex;
       justify-content: center;
       align-items: center;
-      touch-action: none;
-      user-select: none;
-      position: fixed;
-      overscroll-behavior: none;
+      touch-action: manipulation;
       -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-overflow-scrolling: none;
+      user-select: none;
     }
 
     #container {
@@ -88,7 +84,7 @@
       justify-content: flex-start;
       align-items: center;
       height: 52%;
-      margin-top: 5px;
+      margin-top: 5px; 
       z-index: 1;
     }
 
