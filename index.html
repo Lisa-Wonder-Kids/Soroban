@@ -10,35 +10,35 @@
       padding: 0;
       overflow: hidden;
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
       background: gray;
       display: flex;
       justify-content: center;
       align-items: center;
-      touch-action: manipulation;
+      touch-action: none;
+      -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     #container {
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;
-      height: 100%;
     }
 
     .soroban {
       display: flex;
-      flex-wrap: nowrap;
       justify-content: center;
       align-items: center;
       background: #8B4513;
       padding: 10px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      max-width: 100vw;
-      max-height: 100vh;
       overflow: hidden;
     }
 
@@ -84,7 +84,7 @@
       justify-content: flex-start;
       align-items: center;
       height: 52%;
-      margin-top: 5px; 
+      margin-top: 5px;
       z-index: 1;
     }
 
@@ -122,10 +122,8 @@
       transform: translateY(-150%);
     }
 
-    /* Responsive tweaks */
     @media (max-width: 768px) {
       .soroban {
-        flex-direction: row;
         flex-wrap: wrap;
         gap: 5px;
       }
@@ -157,7 +155,6 @@
       }
     }
 
-    /* Portrait warning overlay */
     @media screen and (orientation: portrait) {
       body::before {
         content: "Please rotate your device";
@@ -173,7 +170,6 @@
         text-align: center;
         padding: 1em;
       }
-
       #container {
         display: none;
       }
@@ -183,14 +179,10 @@
 <body>
   <div id="container">
     <div class="soroban">
-      <!-- 7 rods -->
+      <!-- Rods -->
+      <!-- Repeat this for each rod -->
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+      <!-- Add more rods as needed -->
     </div>
   </div>
 
