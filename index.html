@@ -16,7 +16,6 @@
       justify-content: center;
       align-items: center;
       touch-action: none;
-      -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
       overscroll-behavior: none;
@@ -106,6 +105,7 @@
                   inset 2px 2px 5px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s, background-color 0.2s;
       z-index: 3;
+      touch-action: none;
     }
 
     .bead.active {
@@ -191,15 +191,53 @@
   </div>
 
   <script>
+    const activeTouches = {};
+
     document.querySelectorAll('.bead').forEach(bead => {
-      bead.addEventListener('click', toggleBead);
-      bead.addEventListener('touchstart', toggleBead, { passive: true });
+      bead.addEventListener('touchstart', e => {
+        if (e.touches.length > 2) return;
+
+        for (let touch of e.changedTouches) {
+          activeTouches[touch.identifier] = {
+            bead: bead,
+            startY: touch.clientY
+          };
+        }
+      });
+
+      bead.addEventListener('touchmove', e => {
+        for (let touch of e.changedTouches) {
+          const data = activeTouches[touch.identifier];
+          if (!data) continue;
+
+          const deltaY = touch.clientY - data.startY;
+
+          if (data.bead.classList.contains('heaven') && deltaY < -30 && data.bead.classList.contains('active')) {
+            data.bead.classList.remove('active');
+            delete activeTouches[touch.identifier];
+          } else if (data.bead.classList.contains('earth') && deltaY > 30 && data.bead.classList.contains('active')) {
+            const allEarth = Array.from(data.bead.parentElement.children);
+            const index = allEarth.indexOf(data.bead);
+            const allAfterInactive = allEarth.slice(index + 1).every(b => !b.classList.contains('active'));
+            if (allAfterInactive) {
+              data.bead.classList.remove('active');
+              delete activeTouches[touch.identifier];
+            }
+          }
+        }
+      });
+
+      bead.addEventListener('touchend', e => {
+        for (let touch of e.changedTouches) {
+          delete activeTouches[touch.identifier];
+        }
+      });
+
+      // Also support tap
+      bead.addEventListener('click', () => toggleBead(bead));
     });
 
-    function toggleBead(event) {
-      event.preventDefault();
-      const bead = event.currentTarget;
-
+    function toggleBead(bead) {
       if (!bead.classList.contains('earth')) {
         bead.classList.toggle('active');
         return;
