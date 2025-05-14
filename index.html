@@ -11,7 +11,7 @@
       overflow: hidden;
       width: 100vw;
       height: 100dvh;
-      background: gray;
+      background: white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -180,85 +180,165 @@
   <div id="container">
     <div class="soroban">
       <!-- 7 rods -->
+      <div class="rod">
+      <div class="rod-line">
+   </div>
+      <div class="heaven">
+      <div class="bead heaven">
+   </div>
+   </div>
+      <div class="gap-space">
+   </div>
+      <div class="earth">
+      <div class="bead earth">
+   </div>
+      <div class="bead earth">
+   </div>
+      <div class="bead earth">
+   </div>
+      <div class="bead earth">
+   </div>
+   </div>
+      <div class="bar">
+   </div>
+   </div>
+
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
-      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
       <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
     </div>
   </div>
+<script>
+/* =====================================================================
+   Soroban – pro-level touch & gesture layer
+   ===================================================================== */
+(() => {
+  /* ───────── config knobs ────────────────────────────────────────── */
+  const DEAD_ZONE    = 10;      // px you must drag before a move “counts”
+  const SWIPE_DELAY  = 40;      // ms between rod copy actions while sliding
+  const SHAKE_G      = 16;      // accel magnitude (m/s²) to trigger reset
+  const HAPTIC_MS    = 12;      // vibration length per snap (0 = off)
 
-  <script>
-    const activeTouches = {};
+  /* ───────── shorthand ──────────────────────────────────────────── */
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
 
-    document.querySelectorAll('.bead').forEach(bead => {
-      bead.addEventListener('touchstart', e => {
-        if (e.touches.length > 2) return;
+  /* ───────── per-finger state store ─────────────────────────────── */
+  const touches = new Map();  // pointerId → { bead, region, startX, startY,
+                              //                     lastRod, mode, moved }
 
-        for (let touch of e.changedTouches) {
-          activeTouches[touch.identifier] = {
-            bead: bead,
-            startY: touch.clientY
-          };
-        }
-      });
+  /* ───────── helper: activate/deactivate a bead (and its column) ── */
+  function setBead(bead, makeActive) {
+    const heaven = bead.classList.contains('heaven');
 
-      bead.addEventListener('touchmove', e => {
-        for (let touch of e.changedTouches) {
-          const data = activeTouches[touch.identifier];
-          if (!data) continue;
-
-          const deltaY = touch.clientY - data.startY;
-
-          if (data.bead.classList.contains('heaven') && deltaY < -30 && data.bead.classList.contains('active')) {
-            data.bead.classList.remove('active');
-            delete activeTouches[touch.identifier];
-          } else if (data.bead.classList.contains('earth') && deltaY > 30 && data.bead.classList.contains('active')) {
-            const allEarth = Array.from(data.bead.parentElement.children);
-            const index = allEarth.indexOf(data.bead);
-            const allAfterInactive = allEarth.slice(index + 1).every(b => !b.classList.contains('active'));
-            if (allAfterInactive) {
-              data.bead.classList.remove('active');
-              delete activeTouches[touch.identifier];
-            }
-          }
-        }
-      });
-
-      bead.addEventListener('touchend', e => {
-        for (let touch of e.changedTouches) {
-          delete activeTouches[touch.identifier];
-        }
-      });
-
-      // Also support tap
-      bead.addEventListener('click', () => toggleBead(bead));
-    });
-
-    function toggleBead(bead) {
-      if (!bead.classList.contains('earth')) {
-        bead.classList.toggle('active');
-        return;
-      }
-
-      const allEarth = Array.from(bead.parentElement.children);
-      const index = allEarth.indexOf(bead);
-      const isActive = bead.classList.contains('active');
-
-      if (!isActive) {
-        const allBeforeActive = allEarth.slice(0, index).every(b => b.classList.contains('active'));
-        if (allBeforeActive) {
-          bead.classList.add('active');
-        }
+    if (heaven) {
+      bead.classList.toggle('active', makeActive);
+    } else {                    // earth bead chain logic
+      const earths = [...bead.parentElement.children];
+      const idx    = earths.indexOf(bead);
+      if (makeActive) {
+        for (let i = idx; i >= 0; i--) earths[i].classList.add('active');
       } else {
-        const allAfterInactive = allEarth.slice(index + 1).every(b => !b.classList.contains('active'));
-        if (allAfterInactive) {
-          bead.classList.remove('active');
-        }
+        for (let i = idx; i < earths.length; i++) earths[i].classList.remove('active');
       }
     }
-  </script>
+    if (HAPTIC_MS) navigator.vibrate(HAPTIC_MS);
+  }
+
+  /* ───────── gesture setup on every bead ────────────────────────── */
+  $$('.soroban').forEach(board => board.style.touchAction = 'none');
+  $$('.bead').forEach(bead => {
+    bead.addEventListener('pointerdown', onDown);
+    bead.addEventListener('pointermove', onMove);
+    bead.addEventListener('pointerup',   onUpCancel);
+    bead.addEventListener('pointercancel', onUpCancel);
+  });
+
+  function onDown (e) {
+    const bead   = e.currentTarget;
+    bead.setPointerCapture(e.pointerId);
+    bead.classList.add('pressed');
+
+    touches.set(e.pointerId, {
+      bead,
+      region   : bead.classList.contains('heaven') ? 'heaven' : 'earth',
+      startX   : e.clientX,
+      startY   : e.clientY,
+      lastRod  : bead.closest('.rod'),
+      mode     : null,        // 'activate' | 'deactivate' (decided after drag)
+      moved    : false,
+      lastCopy : performance.now()
+    });
+  }
+
+  function onMove (e) {
+    const t = touches.get(e.pointerId);
+    if (!t) return;
+
+    const dy = e.clientY - t.startY;
+    const dx = e.clientX - t.startX;
+    if (!t.moved && Math.hypot(dx, dy) > DEAD_ZONE) t.moved = true;
+
+    /* decide the up-vs-down intention once per drag ---------------- */
+    if (t.mode === null && t.moved) {
+      if (t.region === 'heaven') {
+        t.mode = (dy > 0) ? 'activate' : 'deactivate';
+      } else {                       // earth
+        t.mode = (dy < 0) ? 'activate' : 'deactivate';
+      }
+      /* apply to the bead we started on */
+      setBead(t.bead, t.mode === 'activate');
+    }
+
+    /* side-sweep: if we crossed into a new rod, copy the action ----- */
+    if (t.mode && performance.now() - t.lastCopy > SWIPE_DELAY) {
+      const elem  = document.elementFromPoint(e.clientX, e.clientY);
+      const rod   = elem?.closest?.('.rod');
+      if (rod && rod !== t.lastRod) {
+        const target = t.region === 'heaven'
+                     ? rod.querySelector('.bead.heaven')
+                     : [...rod.querySelectorAll('.bead.earth')].pop(); // bottom earth
+        if (target) setBead(target, t.mode === 'activate');
+        t.lastRod = rod;
+        t.lastCopy = performance.now();
+      }
+    }
+  }
+
+  function onUpCancel (e) {
+    const t = touches.get(e.pointerId);
+    if (!t) return;
+    t.bead.classList.remove('pressed');
+    touches.delete(e.pointerId);
+  }
+
+  /* ───────── shake-to-reset logic (optional) ─────────────────────── */
+  if (window.DeviceMotionEvent) {
+    let last = 0;
+    window.addEventListener('devicemotion', ev => {
+      const { x, y, z } = ev.accelerationIncludingGravity;
+      const mag = Math.hypot(x, y, z);
+      const now = performance.now();
+      if (mag > SHAKE_G && now - last > 750) {   // cooldown so it won’t triple-fire
+        clearBoard();
+        last = now;
+      }
+    });
+  }
+
+  function clearBoard () { $$('.bead.active').forEach(b => b.classList.remove('active')); }
+
+})();
+</script>
+
 </body>
 </html>
+ 
