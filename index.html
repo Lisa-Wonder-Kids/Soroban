@@ -192,7 +192,7 @@ html,body{
     newTop=Math.max(f.bounds.top,Math.min(newTop,f.bounds.bot));
     const delta=newTop - start;
 
-    f.group.forEach(b=>{b.style.transform=translateY(${delta}px);});
+f.group.forEach(b => { b.style.transform = `translateY(${delta}px)`; });
   }
 
   /* ---------------- pointerup / cancel ---------------- */
