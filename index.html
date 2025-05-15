@@ -1,244 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Touch Soroban — full stack logic</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Soroban</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100vw;
+      height: 100dvh;
+      max-width: 100vw;
+      max-height: 100dvh;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-<style>
-/* ───────── layout & board ───────── */
-html,body{
-  margin:0;padding:0;overflow:hidden;
-  width:100vw;height:100dvh;display:flex;justify-content:center;align-items:center;
-  background:#fff;touch-action:none;-webkit-user-select:none;user-select:none;
-  overscroll-behavior:none;-webkit-tap-highlight-color:transparent;
-}
-#container{width:100%;height:100%;display:flex;justify-content:center;align-items:center;}
+    #container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-.soroban{
-  display:flex;justify-content:center;align-items:center;
-  background:#8B4513;padding:10px;border-radius:10px;
-  box-shadow:0 0 15px rgba(0,0,0,.3);
-}
-.rod{
-  position:relative;width:60px;height:250px;background:#D2B48C;
-  border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
-}
-.rod-line{position:absolute;inset:0;width:4px;margin:auto;background:#000;z-index:0;}
-.heaven{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:12%;gap:5px;}
-.gap-space{height:8%;}
-.earth{display:flex;flex-direction:column;justify-content:flex-start;align-items:center;height:52%;margin-top:5px;}
-.bar{position:absolute;top:30%;width:100%;height:8px;background:#000;z-index:2;}
+    .soroban {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #9999ff;
+      padding: 5px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
 
-/* ───────── beads ───────── */
-.bead{
-  width:50px;height:30px;border-radius:50%/40%;
-  background:radial-gradient(circle at 30% 30%, #444, #111);
-  box-shadow:inset -2px -2px 5px rgba(255,255,255,.2),
-             inset  2px  2px 5px rgba(0,0,0,.4);
-  will-change:transform;
-  transition:transform .15s ease,background-color .15s ease;
-  z-index:3;
-}
-.bead.dragging{
-  background:radial-gradient(circle at 30% 30%, #fff, #dcdcdc);
-  box-shadow:inset -2px -2px 5px rgba(0,0,0,.05),
-             inset  2px  2px 5px rgba(0,0,0,.25);
-  transition:none;
-}
-.bead.active{
-  background:radial-gradient(circle at 30% 30%, #ffd700, #ffbf00);
-  box-shadow:inset -2px -2px 5px rgba(255,255,255,.4),
-             inset  2px  2px 5px rgba(0,0,0,.3);
-}
+    .rod {
+      position: relative;
+      width: 90px;
+      height: 270px;
+      background: #8080ff;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* snap positions */
-.bead.heaven.active{transform:translateY(150%);}
-.bead.earth.active {transform:translateY(-150%);}
+    .rod-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #6666ff;
+      z-index: 0;
+    }
 
-/* ───────── responsive tweaks ───────── */
-@media(max-width:768px){
-  .soroban{flex-wrap:wrap;gap:5px;}
-  .rod{width:60px;height:220px;}
-  .bead{width:40px;height:25px;}
-}
-@media(max-width:480px){
-  .soroban{gap:3px;}
-  .rod{width:50px;height:200px;}
-  .bead{width:35px;height:22px;}
-}
-/* rotate-device notice */
-@media screen and (orientation:portrait){
-  body::before{
-    content:"Please rotate your device";
-    position:fixed;inset:0;background:#000;color:#fff;font-size:2rem;
-    display:flex;justify-content:center;align-items:center;z-index:9999;text-align:center;padding:1em;
+    .heaven {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      height: 12%;
+      gap: 2px;
+      z-index: 1;
+    }
+
+    .gap-space {
+      height: 8%;
+      z-index: 1;
+    }
+
+    .earth {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 52%;
+      margin-top: 2px;
+      z-index: 1;
+      gap: 5px;
+    }
+
+    .bar {
+      position: absolute;
+      top: 27%;
+      width: 100%;
+      height: 3px;
+      background: #6666ff;
+      z-index: 2;
+    }
+
+    .bead {
+      width: 90px;
+      height: 60px;
+      margin: 0;
+      background: linear-gradient(to bottom, #000080, #000033); 
+      clip-path: polygon(
+       25% 0%, 75% 0%,
+       100% 50%,
+       75% 100%, 25% 100%,
+       0% 50%
+       );
+      box-shadow: inset -1px -1px 4px rgba(255, 255, 255, 0.3),
+              inset 1px 1px 4px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+      touch-action: none;
+      z-index: 3;
+     }
+
+
+    .bead.active {
+      background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500);
+      box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.4),
+                  inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .bead.heaven.active {
+      transform: translateY(100%);
+    }
+
+   .bead.earth.active {
+     transform: translateY(-150%);
+     }
+
+
+   @media (max-width: 768px) {
+  .rod {
+    width: 60px;
+    height: 220px;
   }
-  #container{display:none;}
+
+  .bead {
+    width: 60px;
+    height: 30px;
+  }
 }
-</style>
+
+@media (max-width: 480px) {
+  .rod {
+    width: 50px;
+    height: 200px;
+  }
+
+  .bead {
+    width: 50px;
+    height: 25px;
+  }
+}
+
+
+    @media screen and (orientation: portrait) {
+      body::before {
+        content: "Please rotate your device";
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: black;
+        color: white;
+        font-size: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        text-align: center;
+        padding: 1em;
+      }
+      #container {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-<div id="container">
-  <div class="soroban">
-    <!-- build 7 rods -->
-    <template id="rod-tpl">
+  <div id="container">
+    <div class="soroban">
+      <!-- 7 rods -->
       <div class="rod">
-        <div class="rod-line"></div>
-        <div class="heaven"><div class="bead heaven"></div></div>
-        <div class="gap-space"></div>
-        <div class="earth">
-          <div class="bead earth"></div><div class="bead earth"></div>
-          <div class="bead earth"></div><div class="bead earth"></div>
-        </div>
-        <div class="bar"></div>
-      </div>
-    </template>
-  </div>
-</div>
+      <div class="rod-line">
+   </div>
+      <div class="heaven">
+      <div class="bead heaven">
+   </div>
+   </div>
+      <div class="gap-space">
+   </div>
+      <div class="earth">
+      <div class="bead earth">
+   </div>
+      <div class="bead earth">
+   </div>
+      <div class="bead earth">
+   </div>
+      <div class="bead earth">
+   </div>
+   </div>
+      <div class="bar">
+   </div>
+   </div>
 
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+
+      <div class="rod"><div class="rod-line"></div><div class="heaven"><div class="bead heaven"></div></div><div class="gap-space"></div><div class="earth"><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div><div class="bead earth"></div></div><div class="bar"></div></div>
+    </div>
+  </div>
 <script>
 /* =====================================================================
-   Soroban – full stack activation/deactivation, realistic stops
+   Soroban – pro-level touch & gesture layer
    ===================================================================== */
 (() => {
-  /* hysteresis thresholds (0–1 fraction of travel) */
-  const ON_EARTH   = 0.30;
-  const OFF_EARTH  = 0.70;
-  const ON_HEAVEN  = 0.70;
-  const OFF_HEAVEN = 0.30;
+  /* ───────── config knobs ────────────────────────────────────────── */
+  const DEAD_ZONE    = 10;      // px you must drag before a move “counts”
+  const SWIPE_DELAY  = 40;      // ms between rod copy actions while sliding
+  const SHAKE_G      = 16;      // accel magnitude (m/s²) to trigger reset
+  const HAPTIC_MS    = 12;      // vibration length per snap (0 = off)
 
-  const SHAKE_G    = 16;
-  const VIBRATE_MS = 12;
+  /* ───────── shorthand ──────────────────────────────────────────── */
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
 
-  const board = document.querySelector('.soroban');
-  const tpl   = document.getElementById('rod-tpl').content;
-  for (let i=0;i<7;i++) board.appendChild(tpl.cloneNode(true));
+  /* ───────── per-finger state store ─────────────────────────────── */
+  const touches = new Map();  // pointerId → { bead, region, startX, startY,
+                              //                     lastRod, mode, moved }
 
-  const fingers=new Map(); // id → {group,heaven,bounds,startTops[],offsetY}
+  /* ───────── helper: activate/deactivate a bead (and its column) ── */
+  function setBead(bead, makeActive) {
+    const heaven = bead.classList.contains('heaven');
 
-  board.style.touchAction='none';
-  board.querySelectorAll('.bead').forEach(b=>{
-    b.addEventListener('pointerdown',start,false);
-    b.addEventListener('pointermove',drag,false);
-    b.addEventListener('pointerup',end,false);
-    b.addEventListener('pointercancel',end,false);
+    if (heaven) {
+      bead.classList.toggle('active', makeActive);
+    } else {                    // earth bead chain logic
+      const earths = [...bead.parentElement.children];
+      const idx    = earths.indexOf(bead);
+      if (makeActive) {
+        for (let i = idx; i >= 0; i--) earths[i].classList.add('active');
+      } else {
+        for (let i = idx; i < earths.length; i++) earths[i].classList.remove('active');
+      }
+    }
+    if (HAPTIC_MS) navigator.vibrate(HAPTIC_MS);
+  }
+
+  /* ───────── gesture setup on every bead ────────────────────────── */
+  $$('.soroban').forEach(board => board.style.touchAction = 'none');
+  $$('.bead').forEach(bead => {
+    bead.addEventListener('pointerdown', onDown);
+    bead.addEventListener('pointermove', onMove);
+    bead.addEventListener('pointerup',   onUpCancel);
+    bead.addEventListener('pointercancel', onUpCancel);
   });
 
-  /* ---------------- pointerdown ---------------- */
-  function start(e){
-    const bead      = e.currentTarget;
-    const rod       = bead.closest('.rod');
-    const rodRect   = rod.getBoundingClientRect();
-    const barRect   = rod.querySelector('.bar').getBoundingClientRect();
-    const beadRect  = bead.getBoundingClientRect();
-    const heaven    = bead.classList.contains('heaven');
+  function onDown (e) {
+    const bead   = e.currentTarget;
+    bead.setPointerCapture(e.pointerId);
+    bead.classList.add('pressed');
 
-    const earths=[...rod.querySelectorAll('.bead.earth')];
-    let group=[bead];
-    let topLimit , botLimit;
+    touches.set(e.pointerId, {
+      bead,
+      region   : bead.classList.contains('heaven') ? 'heaven' : 'earth',
+      startX   : e.clientX,
+      startY   : e.clientY,
+      lastRod  : bead.closest('.rod'),
+      mode     : null,        // 'activate' | 'deactivate' (decided after drag)
+      moved    : false,
+      lastCopy : performance.now()
+    });
+  }
 
-    if(heaven){
-      topLimit = rodRect.top;
-      botLimit = barRect.top - beadRect.height;
-    }else{
-      const idx=earths.indexOf(bead);
-      const isActive=bead.classList.contains('active');
+  function onMove (e) {
+    const t = touches.get(e.pointerId);
+    if (!t) return;
 
-      if(isActive){ /* moving DOWN */
-        // include contiguous ON beads below
-        for(let i=idx+1;i<earths.length;i++){
-          if(earths[i].classList.contains('active')) group.push(earths[i]);
-          else break;
-        }
-        // blocker is first OFF bead below (if any)
-        const blocker=earths[idx+group.length]||null;
-        topLimit=barRect.bottom;
-        botLimit=blocker
-          ? blocker.getBoundingClientRect().top - beadRect.height
-          : rodRect.bottom - beadRect.height;
-      }else{        /* moving UP */
-        // include contiguous OFF beads above
-        for(let i=idx-1;i>=0;i--){
-          if(!earths[i].classList.contains('active')) group.unshift(earths[i]);
-          else break;
-        }
-        // blocker is first ON bead above (if any)
-        const blocker=earths[idx-group.length]||null;
-        botLimit=rodRect.bottom - beadRect.height;
-        topLimit=blocker
-          ? blocker.getBoundingClientRect().bottom
-          : barRect.bottom;
+    const dy = e.clientY - t.startY;
+    const dx = e.clientX - t.startX;
+    if (!t.moved && Math.hypot(dx, dy) > DEAD_ZONE) t.moved = true;
+
+    /* decide the up-vs-down intention once per drag ---------------- */
+    if (t.mode === null && t.moved) {
+      if (t.region === 'heaven') {
+        t.mode = (dy > 0) ? 'activate' : 'deactivate';
+      } else {                       // earth
+        t.mode = (dy < 0) ? 'activate' : 'deactivate';
+      }
+      /* apply to the bead we started on */
+      setBead(t.bead, t.mode === 'activate');
+    }
+
+    /* side-sweep: if we crossed into a new rod, copy the action ----- */
+    if (t.mode && performance.now() - t.lastCopy > SWIPE_DELAY) {
+      const elem  = document.elementFromPoint(e.clientX, e.clientY);
+      const rod   = elem?.closest?.('.rod');
+      if (rod && rod !== t.lastRod) {
+        const target = t.region === 'heaven'
+                     ? rod.querySelector('.bead.heaven')
+                     : [...rod.querySelectorAll('.bead.earth')].pop(); // bottom earth
+        if (target) setBead(target, t.mode === 'activate');
+        t.lastRod = rod;
+        t.lastCopy = performance.now();
       }
     }
-
-    const bounds={top:topLimit,bot:botLimit};
-    const tops=group.map(b=>b.getBoundingClientRect().top);
-    group.forEach(b=>{b.setPointerCapture(e.pointerId);b.classList.add('dragging');});
-
-    fingers.set(e.pointerId,{
-      group,heaven,bounds,startTops:tops,
-      offsetY:e.clientY - tops[tops.length-1]
-    });
   }
 
-  /* ---------------- pointermove ---------------- */
-  function drag(e){
-    const f=fingers.get(e.pointerId); if(!f) return;
-
-    const start=f.startTops[f.startTops.length-1];
-    let newTop=e.clientY - f.offsetY;
-    newTop=Math.max(f.bounds.top,Math.min(newTop,f.bounds.bot));
-    const delta=newTop - start;
-
-f.group.forEach(b => { b.style.transform = `translateY(${delta}px)`; });
+  function onUpCancel (e) {
+    const t = touches.get(e.pointerId);
+    if (!t) return;
+    t.bead.classList.remove('pressed');
+    touches.delete(e.pointerId);
   }
 
-  /* ---------------- pointerup / cancel ---------------- */
-  function end(e){
-    const f=fingers.get(e.pointerId); if(!f) return;
-
-    const primary=f.group[f.group.length-1];
-    const rect=primary.getBoundingClientRect();
-    const travel=f.bounds.bot - f.bounds.top;
-    const pos=(rect.top - f.bounds.top)/travel;  // 0-1
-
-    const wasActive=primary.classList.contains('active');
-    let stayActive=wasActive;
-
-    if(f.heaven){
-      if(wasActive && pos<=OFF_HEAVEN) stayActive=false;
-      if(!wasActive&& pos>=ON_HEAVEN)  stayActive=true;
-    }else{
-      if(wasActive && pos>=OFF_EARTH)  stayActive=false;
-      if(!wasActive&& pos<=ON_EARTH)   stayActive=true;
-    }
-
-    f.group.forEach(b=>{
-      b.classList.toggle('active',stayActive);
-      b.classList.remove('dragging');
-      b.style.transform='';
-      b.releasePointerCapture(e.pointerId);
-    });
-
-    if(VIBRATE_MS) navigator.vibrate(VIBRATE_MS);
-    fingers.delete(e.pointerId);
-  }
-
-  /* ---------------- shake-to-reset ---------------- */
-  if('DeviceMotionEvent'in window){
-    let last=0;
-    addEventListener('devicemotion',ev=>{
-      const {x,y,z}=ev.accelerationIncludingGravity;
-      if(Math.hypot(x,y,z)>SHAKE_G && performance.now()-last>750){
-        board.querySelectorAll('.bead.active').forEach(b=>b.classList.remove('active'));
-        if(VIBRATE_MS) navigator.vibrate([0,40,40,40]);
-        last=performance.now();
+  /* ───────── shake-to-reset logic (optional) ─────────────────────── */
+  if (window.DeviceMotionEvent) {
+    let last = 0;
+    window.addEventListener('devicemotion', ev => {
+      const { x, y, z } = ev.accelerationIncludingGravity;
+      const mag = Math.hypot(x, y, z);
+      const now = performance.now();
+      if (mag > SHAKE_G && now - last > 750) {   // cooldown so it won’t triple-fire
+        clearBoard();
+        last = now;
       }
     });
   }
+
+  function clearBoard () { $$('.bead.active').forEach(b => b.classList.remove('active')); }
+
 })();
 </script>
+
 </body>
 </html>
+ 
