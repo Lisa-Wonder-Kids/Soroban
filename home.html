@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wonder Kids - Home</title>
+  <style>
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #b993d6, #8ca6db);
+      color: white;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+    .sidebar-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    .sidebar {
+      width: 250px;
+      background: rgba(255, 255, 255, 0.7);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      min-width: 200px;
+      min-height: 100vh;
+    }
+    .sidebar.closed {
+      transform: translateX(-100%);
+    }
+    .sidebar-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      padding-top: 70px; /* space for the menu down */
+    }
+    .menu-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 20px;
+      min-height: 0;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .menu-list > li {
+      position: relative;
+      padding: 0;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar li {
+      font-size: 16px;
+    }
+    .sidebar li i {
+      margin-right: 10px;
+    }
+    .sidebar li:hover, .sidebar li.active {
+      background: #d0d8ee;
+      color: #5b3cc4;
+      font-weight: 600;
+    }
+    .level-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 30px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .level-header:hover {
+      background: #d0d8ee;
+      color: #5b3cc4;
+      font-weight: 600;
+    }
+    .level-header i {
+      margin-right: 10px;
+    }
+    .submenu {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 0;
+      transition: all 0.3s ease;
+      max-height: 250px;
+      overflow-y: auto;
+      width: 100%;
+      background: transparent;
+      box-shadow: none;
+      position: static;
+    }
+    .submenu.open {
+      display: flex;
+    }
+    .submenu li {
+      font-size: 14px;
+      padding: 6px 20px;
+      margin: 4px 0;
+      background-color: transparent;
+      border-radius: 4px;
+      color: #333;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      width: 70%;
+      text-align: center;
+      cursor: pointer;
+    }
+    .submenu li:hover {
+      background: #d0d8ee;
+      color: #5b3cc4;
+    }
+    .submenu::-webkit-scrollbar {
+      width: 6px;
+    }
+    .submenu::-webkit-scrollbar-thumb {
+      background: #d0d8ee;
+      border-radius: 3px;
+    }
+    .sidebar-bottom {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: rgba(255,255,255,0.0);
+      padding-bottom: 20px;
+    }
+    .sidebar-bottom-list {
+      list-style: none;
+      margin: 0;
+      padding: 0 0 0 0;
+      width: 100%;
+    }
+    .sidebar-bottom li {
+      padding: 12px 30px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .sidebar-bottom li i {
+      margin-right: 10px;
+    }
+    .logout-icon {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+    }
+    .language-btn {
+      background: transparent;
+      color: #333;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin: 0;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+    .language-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .main {
+      min-height: 100vh;
+      width: calc(100% - 250px);
+      margin-left: 250px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 40px;
+      transition: margin-left 0.3s ease;
+    }
+    .sidebar.closed + .main {
+      margin-left: 0;
+      width: 100%;
+    }
+    .main h1 {
+      font-size: clamp(24px, 4vw, 32px);
+      margin-bottom: 10px;
+    }
+    .main .welcome {
+      font-size: clamp(16px, 3vw, 18px);
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+      .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 0 10px;
+        min-height: 100vh;
+      }
+      .sidebar-bottom li {
+        padding: 12px 15px;
+      }
+    }
+    @media (max-width: 480px) {
+      .main h1 {
+        font-size: 20px;
+      }
+      .main .welcome {
+        font-size: 14px;
+      }
+      .sidebar li {
+        font-size: 14px;
+        padding: 10px 20px;
+      }
+      .submenu {
+        max-height: 150px;
+      }
+      .sidebar-bottom li {
+        font-size: 14px;
+        padding: 10px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+
+  <div class="sidebar closed" id="sidebar">
+    <div class="sidebar-content">
+      <ul class="menu-list">
+        <li onclick="closeSidebar()">
+          <i>👤</i>
+          <span>My Account</span>
+        </li>
+        <li>
+          <div class="level-header" onclick="toggleCourses()">
+            <i>📘</i>
+            <span>Level 1</span>
+            <span id="arrow">▾</span>
+          </div>
+          <ul class="submenu" id="coursesSubmenu">
+            <li onclick="location.href='sorobancoursepage.html'">Soroban</li>
+            <li onclick="closeSidebar()">Chapter 2</li>
+            <li onclick="closeSidebar()">Chapter 3</li>
+            <li onclick="closeSidebar()">Chapter 4</li>
+            <li onclick="closeSidebar()">Chapter 5</li>
+            <li onclick="closeSidebar()">Chapter 6</li>
+            <li onclick="closeSidebar()">Chapter 7</li>
+            <li onclick="closeSidebar()">Chapter 8</li>
+            <li onclick="closeSidebar()">Chapter 9</li>
+            <li onclick="closeSidebar()">Chapter 10</li>
+            <li onclick="closeSidebar()">Chapter 11</li>
+            <li onclick="closeSidebar()">Chapter 12</li>
+            <li onclick="closeSidebar()">Chapter 13</li>
+            <li onclick="closeSidebar()">Chapter 14</li>
+            <li onclick="closeSidebar()">Chapter 15</li>
+            <li onclick="closeSidebar()">Chapter 16</li>
+            <li onclick="closeSidebar()">Chapter 17</li>
+            <li onclick="closeSidebar()">Chapter 18</li>
+
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="sidebar-bottom">
+      <ul class="sidebar-bottom-list">
+        <li onclick="logout()">
+          <i class="logout-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#5b3cc4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="11" width="16" height="8" rx="2" fill="#5b3cc4" stroke="none"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#5b3cc4" fill="none"/>
+              <circle cx="12" cy="15" r="1.5" fill="#fff"/>
+            </svg>
+          </i>
+          <span>Log Out</span>
+        </li>
+        <li>
+          <button class="language-btn" onclick="toggleLanguage()">🌐 EN / TH</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="main">
+    <h1 id="mainTitle">Welcome to Wonder Kids</h1>
+    <div id="userWelcome" class="welcome"></div>
+  </div>
+
+  <script>
+    const translations = {
+      en: {
+        title: "Welcome to Wonder Kids"
+      },
+      th: {
+        title: "ยินดีต้อนรับสู่วันเดอร์คิดส์"
+      }
+    };
+
+    function toggleLanguage() {
+      const lang = localStorage.getItem("lang") === "th" ? "en" : "th";
+      setLanguage(lang);
+    }
+
+    function setLanguage(lang) {
+      localStorage.setItem("lang", lang);
+      const t = translations[lang];
+      document.getElementById("mainTitle").textContent = t.title;
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("closed");
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      if (window.innerWidth < 769) {
+        sidebar.classList.add("closed");
+      }
+    }
+
+    function toggleCourses() {
+      const submenu = document.getElementById("coursesSubmenu");
+      const arrow = document.getElementById("arrow");
+      submenu.classList.toggle("open");
+      arrow.textContent = submenu.classList.contains("open") ? "▴" : "▾";
+    }
+
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "en";
+      setLanguage(lang);
+
+      const user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("userWelcome").textContent = `Hello, ${user.username} (${user.role})`;
+      }
+    };
+  </script>
+</body>
+</html>

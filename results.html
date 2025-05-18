@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Soroban Results</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #b993d6, #8ca6db);
+      color: white;
+      display: flex;
+      flex-direction: row;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .sidebar-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    .sidebar {
+      width: 250px;
+      background: rgba(255, 255, 255, 0.7);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 80px 0 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      min-height: 100vh;
+    }
+    .sidebar.closed {
+      transform: translateX(-100%);
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar li {
+      padding: 12px 30px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .sidebar li:hover, .sidebar li.active {
+      background: #d0d8ee;
+      color: #5b3cc4;
+      font-weight: 600;
+    }
+    .sidebar li i {
+      margin-right: 10px;
+    }
+    .language-btn {
+      background: transparent;
+      color: #333;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 30px 0 30px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+    .language-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .card {
+      background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+      padding: 30px;
+      border-radius: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: auto;
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 10px 15px;
+      margin: 6px 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      transition: background 0.3s;
+    }
+    .result-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    h2 {
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      color: #ffffff;
+    }
+    #scoreLine {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .btn {
+      background: #4d79ff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      margin-top: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .btn:hover {
+      background: #3b5ccc;
+      transform: scale(1.05);
+    }
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 200px;
+        padding-top: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+  <div class="sidebar closed" id="sidebar">
+    <ul>
+      <li onclick="closeSidebar()"><i>👤</i> My Account</li>
+      <li class="active" onclick="closeSidebar()"><i>📘</i> Courses</li>
+      <li onclick="closeSidebar()"><i>🧾</i> Progress</li>
+      <li onclick="closeSidebar()"><i>⚙️</i> Settings</li>
+      <li onclick="logout()"><i>🔓</i> Log Out</li>
+      <li><button class="language-btn" onclick="toggleLanguage()">🌐 EN / TH</button></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2 id="resultsTitle">Results</h2>
+    <div id="resultList"></div>
+    <div id="scoreLine" style="margin-top: 10px;"></div>
+    <button class="btn" onclick="location.href='index.html'">Back to Main Menu</button>
+  </div>
+
+<script>
+const resultList = document.getElementById('resultList');
+const scoreLine = document.getElementById('scoreLine');
+const resultsTitle = document.getElementById('resultsTitle');
+
+function loadResults() {
+  const stored = localStorage.getItem('sorobanResults');
+  if (!stored) {
+    resultList.innerHTML = '<p>No results found.</p>';
+    return;
+  }
+  const answers = JSON.parse(stored);
+  let score = 0;
+  answers.forEach((item, i) => {
+    const isCorrect = item.user === item.correct;
+    if (isCorrect) score++;
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.textContent = `Q${i + 1}: ${item.user} ${isCorrect ? '✅' : '❌'}`;
+    resultList.appendChild(div);
+  });
+  scoreLine.textContent = `You scored ${score} / ${answers.length}`;
+}
+
+const translations = {
+  en: { title: "Results" },
+  th: { title: "ผลลัพธ์" }
+};
+
+function toggleLanguage() {
+  const lang = localStorage.getItem("lang") === "th" ? "en" : "th";
+  setLanguage(lang);
+}
+function setLanguage(lang) {
+  localStorage.setItem("lang", lang);
+  const t = translations[lang];
+  resultsTitle.textContent = t.title;
+}
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("closed");
+}
+function closeSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  if (window.innerWidth < 769) {
+    sidebar.classList.add("closed");
+  }
+}
+function logout() {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "index.html";
+}
+
+window.onload = () => {
+  const lang = localStorage.getItem("lang") || "en";
+  setLanguage(lang);
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (!user) window.location.href = "index.html";
+  loadResults();
+};
+</script>
+</body>
+</html>

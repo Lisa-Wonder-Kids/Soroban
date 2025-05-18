@@ -1,0 +1,312 @@
+ <!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Soroban Course</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #b993d6, #8ca6db);
+      color: white;
+      display: flex;
+      flex-wrap: wrap;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .sidebar-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    .sidebar {
+      width: 250px;
+      background: rgba(255, 255, 255, 0.7);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 80px 0 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      min-height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    .sidebar.closed {
+      transform: translateX(-100%);
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar li {
+      padding: 12px 30px;
+      font-size: clamp(14px, 2vw, 16px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .sidebar li span {
+      flex-grow: 1;
+    }
+    .sidebar li:hover, .sidebar li.active {
+      background: #d0d8ee;
+      color: #5b3cc4;
+      font-weight: 600;
+    }
+    .language-btn {
+      background: transparent;
+      color: #333;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 0 0 0;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+    .language-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    .submenu {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 5px;
+      transition: all 0.3s ease;
+    }
+    .submenu li {
+      font-size: clamp(12px, 2vw, 14px);
+      padding: 6px 20px;
+      margin: 4px 0;
+      background-color: transparent;
+      border-radius: 4px;
+      color: #333;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      width: 70%;
+      text-align: center;
+    }
+    .submenu.open {
+      display: flex;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 10px 150px 50px 220px; /* Top Right Bottom Left */
+      min-width: 0;
+      width: 100%;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: clamp(20px, 5vw, 32px);
+    }
+    .video-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 30px;
+      width: 100%;
+    }
+    .video-label {
+      margin-bottom: 10px;
+      font-size: clamp(16px, 3vw, 22px);
+      color: white;
+      font-weight: 600;
+    }
+    .responsive-iframe {
+      width: 560px;
+      height: 315px;
+      max-width: 95vw;
+      max-height: 55vw;
+      border: 5px solid #b993d6;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(50, 50, 120, 0.2);
+      background: #222;
+      margin-bottom: 24px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: #444;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      margin: 0;
+      font-size: clamp(14px, 3vw, 18px);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: 600;
+    }
+    .btn:hover {
+      background: #5b3cc4;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+        padding-top: 100px;
+      }
+      .main {
+  /* Top    Right   Bottom  Left  */
+  padding: 100px 50px 20px 50px;
+  /*  90px    30px    20px   220px */
+}
+
+      .responsive-iframe {
+        width: 90vw;
+        height: 50vw;
+        min-height: 180px;
+      }
+    }
+    @media (max-width: 480px) {
+      .main {
+        padding: 100px 2vw 10px 2vw;
+      }
+      .sidebar {
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+        width: 180px;
+      }
+      .responsive-iframe {
+        width: 98vw;
+        height: 55vw;
+        min-height: 120px;
+      }
+      .btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+  <div class="sidebar closed" id="sidebar">
+    <ul>
+      <li onclick="closeSidebar()"><i>👤</i><span>My Account</span></li>
+      <li onclick="toggleCourses()"><i>📘</i><span>Courses</span><span id="arrow">▾</span></li>
+      <ul class="submenu" id="coursesSubmenu">
+        <li onclick="closeSidebar()">Soroban</li>
+        <li onclick="closeSidebar()">English</li>
+        <li onclick="closeSidebar()">Thai</li>
+        <li onclick="closeSidebar()">Math</li>
+        <li onclick="closeSidebar()">Chinese</li>
+      </ul>
+      <li onclick="closeSidebar()"><i>🧾</i><span>Progress</span></li>
+      <li onclick="closeSidebar()"><i>⚙️</i><span>Settings</span></li>
+      <li onclick="logout()"><i>🔓</i><span>Log Out</span></li>
+      <li><button class="language-btn" onclick="toggleLanguage()">🌐 EN / TH</button></li>
+    </ul>
+  </div>
+  <div class="main">
+    <h1 id="pageTitle">Soroban Level 1</h1>
+    <div class="video-section">
+      <div class="video-label" id="videoLabel"> Chapter 1 (Lower + Upper)</div>
+
+<iframe class="responsive-iframe"
+  src="https://www.youtube.com/embed/K91CRNQg2dg"
+  title="Soroban Learning Video"
+  frameborder="0"
+  allowfullscreen></iframe>
+
+
+
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="location.href='quiz.html'" id="exerciseBtn">EXERCISE</button>
+    </div>
+  </div>
+  <script>
+    const translations = {
+      en: {
+        title: "Soroban Course",
+        exercise: "EXERCISE",
+        videoLabel: "Learning Video"
+      },
+      th: {
+        title: "คอร์ส Soroban",
+        exercise: "แบบฝึกหัด",
+        videoLabel: "วิดีโอการเรียนรู้"
+      }
+    };
+
+```
+function toggleLanguage() {
+  const lang = localStorage.getItem("lang") === "th" ? "en" : "th";
+  setLanguage(lang);
+}
+
+function setLanguage(lang) {
+  localStorage.setItem("lang", lang);
+  const t = translations[lang];
+  document.getElementById("pageTitle").textContent = t.title;
+  document.getElementById("exerciseBtn").textContent = t.exercise;
+  document.getElementById("tryAgainBtn").textContent = t.tryAgain;
+  document.getElementById("videoLabel").textContent = t.videoLabel;
+}
+
+function logout() {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "index.html";
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("closed");
+}
+
+function closeSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  if (window.innerWidth < 769) {
+    sidebar.classList.add("closed");
+  }
+}
+
+function toggleCourses() {
+  const submenu = document.getElementById("coursesSubmenu");
+  const arrow = document.getElementById("arrow");
+  submenu.classList.toggle("open");
+  arrow.textContent = submenu.classList.contains("open") ? "▴" : "▾";
+}
+
+window.onload = () => {
+  const lang = localStorage.getItem("lang") || "en";
+  setLanguage(lang);
+
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (!user) {
+    window.location.href = "home.html";
+  }
+}
+```
+
+  </script>
+</body>
+</html>   

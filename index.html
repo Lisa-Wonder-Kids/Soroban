@@ -1,339 +1,58 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Soroban Quiz</title>
+  <title>Wonder Kids - Home</title>
+  <link rel="stylesheet" href="sidebar.css">
   <style>
-    html, body {
-      margin: 0; padding: 0;
-      width: 100vw; height: 100dvh;
-      font-family: sans-serif;
-      background: #b3c4e7 ;
-      overflow: hidden;
-    }
-    .sidebar {
-      position: fixed;
-      top: 0; right: 0;
-      width: 40px; height: 100vh;
-      background: #99b3ff;
+    .main {
+      min-height: 100vh;
+      width: calc(100% - 250px);
+      margin-left: 250px;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 10px 0;
-      box-shadow: -2px 0 5px rgba(0,0,0,0.3);
-      z-index: 10001;
-    }
-    .sidebar-spacer {
-      flex: 1 1 auto;
-    }
-    .sidebar img {
-      width: 30px; height: 30px;
-      margin: 15px 0; cursor: pointer;
-      user-select: none;
-    }
-    .main-content {
-      display: flex; flex-direction: row;
-      height: 100vh; margin-right: 40px;
-    }
-    .quiz-container {
-      width: 40vw; min-width: 320px; max-width: 420px;
-      height: 100vh;
-      color: white;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 20px; box-sizing: border-box;
-      z-index: 2;
-      margin-left: 32px;
-    }
-    .quiz-box {
-      padding-top: 10px;
-      background: #8ca6db;
-      padding: 16px;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      display: flex; flex-direction: column;
-      align-items: center; color: white;
-      margin-left: 20px;
-    }
-    #quizTimer {
-  font-size: 15px;
-  font-weight: bold;
-  margin-right: 170px;
-  margin-top: 10px;     /* <-- adjust this for more/less space above */
-  margin-bottom: 0;     /* <-- remove bottom margin if not needed */
-}
-
-    .question { font-size: 35px; font-weight: bold; margin-bottom: 20px; text-align: left; }
-    .input-label { font-size: 15px; font-weight: bold; margin-bottom: 6px; width: 100%; text-align: left; margin-left: 32px; }
-    .input-section {
-      display: flex; width: 90%; align-items: center; justify-content: space-between; margin-bottom: 20px;
-    }
-    .answer-display {
-      font-size: 20px; padding: 7px; background: #fff; border-radius: 6px;
-      flex-grow: 1; margin-right: 8px; text-align: left; cursor: pointer; color: #333;
-      border: 2px solid #b993d6; transition: background 0.2s;
-    }
-    .answer-display:hover { background: #e0eaff; }
-    .send-btn {
-      font-size: 15px; padding: 10px 15px;
-      background: #668cff; color: white; border: none; border-radius: 8px; cursor: pointer;
-    }
-    .numpad {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; width: 90%;
-    }
-    .numpad button {
-      font-size: 24px; padding: 5px;
-      border-radius: 10px; border: none;
-      background: #668cff; color: white; cursor: pointer;
-      display: flex; justify-content: center; align-items: center;
-      outline: none;
-    }
-    .numpad button svg {
-      display: block;
-    }
-    .soroban-container {
-      flex: 1; height: 100vh; min-width: 320px;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    iframe { width: 100%; height: 100%; border: none; }
-    @media (max-width: 900px) {
-      .quiz-container { min-width: 240px; }
-      .soroban-container { min-width: 120px; }
-    }
-    @media (max-width: 650px) {
-      .main-content { flex-direction: column; }
-      .quiz-container, .soroban-container { width: 100vw; height: 50vh; }
-      .quiz-container { min-width: unset; }
-      .sidebar {
-        height: 40px; width: 100vw; top: 0; right: 0; left: unset; bottom: unset; flex-direction: row;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      }
-      .sidebar img { margin: 0 10px; }
-      .main-content { margin-right: 0; margin-top: 40px; }
-    }
-    .rotate-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #b3c6ff;
-      color: #000099;
-      font-size: 2rem;
       justify-content: center;
-      align-items: center;
-      z-index: 9999;
       text-align: center;
-      padding: 1em;
-      flex-direction: column;
+      padding: 0 40px;
+      transition: margin-left 0.3s ease;
     }
-    @media screen and (orientation: portrait) {
-      .rotate-overlay { display: flex !important; }
-      .main-content, .sidebar {
-        filter: blur(2px);
-        pointer-events: none;
-        user-select: none;
-      }
-    }
-    .question-row {
-      width: 100%;
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      min-height: 45px;
-      margin-top: 5px;
-    }
-    .q-num {
-      position: absolute;
-      left: 10px;
-      top: -15px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #fff;
-      padding: 4px 12px 4px 10px;
-      border-radius: 8px;
-      letter-spacing: 1px;
-      z-index: 1;
-    }
-    .question-text {
-      flex: 1;
-      font-size: 35px;
-      font-weight: bold;
-      text-align: center;
-      padding-top: 2px;
-    }
-    #fullscreenBtn,
-    #exitFullscreenBtn {
-      width: 30px;
-      height: 30px;
-      cursor: pointer;
-      position: absolute;
-      bottom: 85px;
-      right: 5px;
-      z-index: 10002;
-      display: none;
+    @media (max-width: 768px) {
+      .main { margin-left: 0; width: 100%; }
     }
   </style>
 </head>
 <body>
- <div class="rotate-overlay">
-  <video id="rotateVideo" width="320" height="240" autoplay loop muted playsinline>
-    <source src="video.mp4" type="video/mp4">
-  </video>
-  <span style="font-size:1.2rem;color:#445;"></span>
-</div>
-
-  <div class="sidebar">
-    <img id="backBtn" src="back.png" alt="Back" title="Go Back" />
-    <div class="sidebar-spacer"></div>
-    <img id="fullscreenBtn" src="full.png" title="Fullscreen" style="display:inline;" />
-    <img id="exitFullscreenBtn" src="close.png" title="Exit Fullscreen" style="display:none;" />
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
+  <div id="sidebar-container"></div>
+  <div class="main">
+    <h1 id="mainTitle">Welcome to Wonder Kids</h1>
+    <div id="userWelcome"></div>
+    <!-- ...other main page content... -->
   </div>
-
-  <div class="main-content">
-    <div class="quiz-container">
-      <div class="quiz-box">
-        <div class="question-row">
-          <div class="q-num" id="qNum">Q1:</div>
-          <div class="question-text" id="questionText">9 × 25 =</div>
-        </div>
-        <label class="input-label">Answer</label>
-        <div class="input-section">
-          <div class="answer-display" id="currentInput">= 0</div>
-          <button class="send-btn" onclick="submitAnswer()">Send</button>
-        </div>
-        <div class="numpad" id="numpad"></div>
-        <div id="quizTimer">Time Left: 10:00</div>
-      </div>
-    </div>
-    <div class="soroban-container">
-<iframe id="sorobanFrame" src="soroban.html" style="width:350px; height:350px;" allow="fullscreen"></iframe>
-    </div>
-  </div>
-<script>
-  // =============== SIDEBAR FULLSCREEN/BACK LOGIC ====================
-  const fullscreenBtn = document.getElementById("fullscreenBtn");
-  const exitFullscreenBtn = document.getElementById("exitFullscreenBtn");
-  const elem = document.documentElement;
-
-  function openFullscreen() {
-    if (elem.requestFullscreen) { elem.requestFullscreen(); }
-    else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
-    else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); }
-  }
-  function closeFullscreen() {
-    if (document.exitFullscreen) { document.exitFullscreen(); }
-    else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-    else if (document.msExitFullscreen) { document.msExitFullscreen(); }
-  }
-  document.addEventListener("fullscreenchange", toggleFullscreenButtons);
-  document.addEventListener("webkitfullscreenchange", toggleFullscreenButtons);
-  document.addEventListener("msfullscreenchange", toggleFullscreenButtons);
-  function toggleFullscreenButtons() {
-    const isFull = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-    fullscreenBtn.style.display = isFull ? "none" : "inline";
-    exitFullscreenBtn.style.display = isFull ? "inline" : "none";
-  }
-  fullscreenBtn.onclick = openFullscreen;
-  exitFullscreenBtn.onclick = closeFullscreen;
-  document.getElementById("backBtn").onclick = function() {
-    if (window.history.length > 1) window.history.back();
-    else alert("No previous page to go back to.");
-  };
-
-  // =============== QUIZ LOGIC ====================
-  const QUESTIONS = [
-    { q: '9 × 25', a: '225' },
-    { q: '120 + 4', a: '124' },
-    { q: '250 - 10', a: '240' },
-    { q: '13 + 17', a: '30' },
-    { q: '5 × 9', a: '45' },
-    { q: '90 - 40', a: '50' },
-    { q: '3 + 4 + 2', a: '9' },
-    { q: '100 + 23', a: '123' },
-    { q: '80 - 15', a: '65' },
-    { q: '5 × 6', a: '30' }
-  ];
-  let currentIndex = 0, answers = [], currentInput = '', inputLocked = false, timerInterval = null, timeLeft = 600;
-  const currentInputDisplay = document.getElementById('currentInput');
-  const quizTimer = document.getElementById('quizTimer');
-
-  function startQuiz() {
-    currentIndex = 0; answers = []; currentInput = ''; inputLocked = false;
-    loadQuestion(); updateTimer();
-    timerInterval = setInterval(() => {
-      timeLeft--; updateTimer();
-      if (timeLeft <= 0) finishQuiz();
-    }, 1000);
-  }
-  function updateTimer() {
-    const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-    const s = (timeLeft % 60).toString().padStart(2, '0');
-    quizTimer.textContent = `Time Left: ${m}:${s}`;
-  }
-  function loadQuestion() {
-    const q = QUESTIONS[currentIndex];
-    document.getElementById('qNum').textContent = `Q${currentIndex + 1}:`;
-    document.getElementById('questionText').textContent = `${q.q} =`;
-    currentInput = '';
-    inputLocked = false;
-    currentInputDisplay.textContent = '= 0 ';
-  }
-
-  function appendDigit(d) {
-    if (inputLocked) return;
-    if (d === 'C') currentInput = '';
-    else if (d === 'BACK') currentInput = currentInput.slice(0, -1);
-    else currentInput += d;
-    currentInputDisplay.textContent = `= ${currentInput || '0'} `;
-  }
-  function submitAnswer() {
-    if (inputLocked || currentInput === '') return;
-    inputLocked = true;
-    const q = QUESTIONS[currentIndex];
-    answers.push({ question: q.q, correct: q.a, user: currentInput });
-    currentIndex++;
-    if (currentIndex < QUESTIONS.length) setTimeout(loadQuestion, 200);
-    else finishQuiz();
-  }
-  function finishQuiz() {
-    clearInterval(timerInterval);
-    localStorage.setItem('sorobanResults', JSON.stringify(answers));
-    location.href = 'results.html';
-  }
-
-  // Numpad with SVG Backspace
-  const pad = ['0','1','2','3','4','5','6','7','8','9','C','BACK'];
-  const padWrap = document.getElementById('numpad');
-  pad.forEach(d => {
-    const btn = document.createElement('button');
-    if (d === 'BACK') {
-      // SVG closely matching your image
-      btn.innerHTML = `
-        <svg width="32" height="32" viewBox="0 0 32 32">
-          <g>
-            <!-- Backspace outline shape -->
-            <path d="M6 16 L14 8 H26 Q28 8 28 10 V22 Q28 24 26 24 H14 L6 16 Z" 
-                  fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
-            <!-- X in the center -->
-            <line x1="17" y1="13" x2="23" y2="19" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="23" y1="13" x2="17" y2="19" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-          </g>
-        </svg>
-      `;
-      btn.title = "Backspace";
-    } else {
-      btn.textContent = d;
-    }
-    btn.onclick = () => appendDigit(d);
-    padWrap.appendChild(btn);
-  });
-  currentInputDisplay.onclick = submitAnswer;
-  startQuiz();
-</script>
+  <script>
+    // Load the sidebar HTML dynamically
+    fetch('sidebar.html')
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('sidebar-container').innerHTML = html;
+        // After sidebar loaded, update language and run any scripts needed
+        const lang = localStorage.getItem("lang") || "en";
+        if (typeof setSidebarLanguage === "function") setSidebarLanguage(lang);
+      });
+  </script>
+  <script src="sidebar.js"></script>
+  <script>
+    // Example: set welcome text
+    window.onload = function() {
+      const user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (user) {
+        document.getElementById("userWelcome").textContent = `Hello, ${user.username} (${user.role})`;
+      } else {
+        document.getElementById("userWelcome").textContent = "";
+      }
+    };
+  </script>
 </body>
 </html>
