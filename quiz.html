@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Soroban Quiz</title>
   <style>
-    
     html, body {
       margin: 0; padding: 0;
       width: 100vw; height: 100dvh;
@@ -39,8 +39,7 @@
       height: 100vh; margin-right: 40px;
     }
     .quiz-container {
-      width: 40vw; min-width: 320px; max-width: 420px;
-      height: 100vh;
+      width: 15vw; min-width: 300px; max-width: 300px;
       color: white;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -51,24 +50,28 @@
     .quiz-box {
       padding-top: 10px;
       background: #8ca6db;
-      padding: 16px;
+      padding: 15px;
       border-radius: 10px;
       width: 100%;
       max-width: 400px;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
       display: flex; flex-direction: column;
       align-items: center; color: white;
-      margin-left: 20px;
+      margin-left: 0px;
     }
     #quizTimer {
-      font-size: 15px;
-      font-weight: bold;
-      margin-right: 170px;
-      margin-top: 10px;
-      margin-bottom: 0;
-    }
-    .question { font-size: 35px; font-weight: bold; margin-bottom: 20px; text-align: left; }
+  font-size: 15px;
+  font-weight: bold;
+  margin-right: 100px;
+  margin-top: 10px;     /* <-- adjust this for more/less space above */
+  margin-bottom: 0;     /* <-- remove bottom margin if not needed */
+}
+
+    .question { 
+font-size: 35px; font-weight: bold; margin-bottom: 20px; text-align: left; }
+
     .input-label { font-size: 15px; font-weight: bold; margin-bottom: 6px; width: 100%; text-align: left; margin-left: 32px; }
+
     .input-section {
       display: flex; width: 90%; align-items: center; justify-content: space-between; margin-bottom: 20px;
     }
@@ -97,7 +100,9 @@
     }
     .soroban-container {
       flex: 1; height: 100vh; min-width: 320px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; 
+align-items: center; 
+justify-content: center;
       overflow: hidden;
     }
     iframe { width: 100%; height: 100%; border: none; }
@@ -210,7 +215,7 @@
       </div>
     </div>
     <div class="soroban-container">
-      <iframe id="sorobanFrame" src="soroban.html" allowfullscreen allow="fullscreen"></iframe>
+<iframe id="sorobanFrame" src="soroban.html" style="width:700vw; height:600vw;" allow="fullscreen"></iframe>
     </div>
   </div>
 <script>
